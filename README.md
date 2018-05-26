@@ -431,3 +431,138 @@ public class Solution {
 * 对于这类问题，我们首先明白循环到sum>>1+2就可以了，因为我们知道一个数最多可以由（中值*2+1）取的。
 #### 12.把数组排成最小的数
 ##### 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
+```
+public class Solution {
+    public String PrintMinNumber(int [] numbers) {
+        	int n;
+	        String s="";
+	        ArrayList<Integer> list=new ArrayList<Integer>();
+	        n=numbers.length;	         
+	        for(int i=0;i<n;i++){
+	            list.add(numbers[i]);//将数组放入arrayList中
+	        }
+	        //实现了Comparator接口的compare方法，将集合元素按照compare方法的规则进行排序
+	        Collections.sort(list,new Comparator<Integer>(){    
+	            public int compare(Integer str1, Integer str2) {
+	                // TODO Auto-generated method stub         
+	                    String s1=str1+""+str2;
+	                    String s2=str2+""+str1;	                     
+	                    return s1.compareTo(s2);
+	                }
+	            });
+	         
+	        for(int j:list){
+	            s+=j;
+	        }
+	        return s;
+    }
+}
+```
+* 使用Collections.sort做对比；举例：1,32,321；如果1和32组合最小值为132,32和321组合最小值为32132，所以排序为1,321,32.->132132
+#### 13.二进制中1的个数
+##### 输入一个整数，输出该数二进制表示中1的个数。其中负数用补码表示。
+```
+public class Solution {
+     public int NumberOf1(int n) {
+		 	 int count=0;
+			 String s=Integer.toBinaryString(n);
+			 for(int i=0;i<s.length();i++){
+				 if(s.charAt(i)=='1')
+					 count++;
+			 }
+		 	return count;
+	 }
+}
+```
+* 主要运用Integer.toBinaryString（）方法转化为二进制；
+#### 14.调整数组顺序使奇数位于偶数前面
+##### 输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+```
+public class Solution {
+    public void reOrderArray(int [] array) {
+       ArrayList<Integer> arrayList1=new ArrayList<Integer>();
+       ArrayList<Integer> arrayList2=new ArrayList<Integer>();
+		for(int i=0;i<array.length;i++){
+        	if(array[i]%2!=0)
+        		arrayList1.add(array[i]);
+        	else
+        		arrayList2.add(array[i]);
+        	}
+		for(int j=0;j<arrayList1.size();j++){
+			array[j]=arrayList1.get(j);
+		}
+		for(int m=0;m<arrayList2.size();m++){
+			array[m+arrayList1.size()]=arrayList2.get(m);
+		}  
+    }
+}
+```
+* 把偶数和奇数分别存在ArrayList中即可解决；
+#### 15.链表中倒数第k个结点
+##### 输入一个链表，输出该链表中倒数第k个结点。
+```
+/*
+public class ListNode {
+    int val;
+    ListNode next = null;
+
+    ListNode(int val) {
+        this.val = val;
+    }
+}*/
+import java.util.Stack;
+public class Solution {
+    public ListNode FindKthToTail(ListNode head,int k) {
+        Stack<ListNode> stack=new Stack<ListNode>();
+        if(head==null||k==0)
+            return null;
+		 while(head!=null){
+			 stack.push(head);
+			 head=head.next;
+		 }
+		 for(int i=0;i<k-1;i++){
+			 stack.pop();
+		 }
+         if(!stack.isEmpty())
+		 return stack.pop();
+		 else
+		 return null;
+    }
+}
+```
+* 遍历链表到栈中，取出栈中第K个节点即可；
+#### 16.反转链表
+##### 输入一个链表，反转链表后，输出链表的所有元素。
+```
+public class Solution {
+    public ListNode ReverseList(ListNode head) {
+             if(head==null)
+	            return null;
+	        //head为当前节点，如果当前节点为空的话，那就什么也不做，直接返回null；
+	        ListNode pre = null;
+	        ListNode next = null;
+	        //当前节点是head，pre为当前节点的前一节点，next为当前节点的下一节点
+	        //需要pre和next的目的是让当前节点从pre->head->next1->next2变成pre<-head next1->next2
+	        //即pre让节点可以反转所指方向，但反转之后如果不用next节点保存next1节点的话，此单链表就此断开了
+	        //所以需要用到pre和next两个节点
+	        while(head!=null){
+	            //做循环，如果当前节点不为空的话，始终执行此循环，此循环的目的就是让当前节点从指向next到指向pre
+	            //如此就可以做到反转链表的效果
+	            //先用next保存head的下一个节点的信息，保证单链表不会因为失去head节点的原next节点而就此断裂
+	            next = head.next;
+	            //保存完next，就可以让head从指向next变成指向pre了，代码如下
+	            head.next = pre;
+	            //head指向pre后，就继续依次反转下一个节点
+	            //让pre，head，next依次向后移动一个节点，继续下一次的指针反转
+	            pre = head;
+	            head = next;
+	        }
+	        //如果head为null的时候，pre就为最后一个节点了，但是链表已经反转完毕，pre就是反转后链表的第一个节点
+	        //直接输出pre就是我们想要得到的反转后的链表
+	        return pre;
+    }
+}
+```
+* 详见注解
+
+
