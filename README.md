@@ -55,6 +55,268 @@ public class Solution {
 	    }
 }
 ```
-* 我们知道由中序遍历和前序遍历或者中序遍历和后续遍历都可以唯一确定一个二叉树
+* 我们知道由中序遍历和前序遍历或者中序遍历和后续遍历都可以唯一确定一个二叉树,前序遍历为DLR,中序遍历LDR,后序遍历LRD.由此可以确定前序遍历的第一个值肯定是根节点，再由此数值对应中序位置，左边的为左子树，右边的为右子树。依次遍历得到最后的二叉树。
+#### 3.两个栈实现队列
+##### 用两个栈来实现一个队列，完成队列的Push和Pop操作。 队列中的元素为int类型。
+```
+public class Solution {
+    Stack<Integer> stack1 = new Stack<Integer>();
+    Stack<Integer> stack2 = new Stack<Integer>();
+   	 public  void push(int node) {
+		stack1.push(node);
+    }
+	public  int pop() {
+		  while(!stack1.isEmpty()){
+	            stack2.push(stack1.pop());
+	        }
+	        int node=stack2.pop();
+	        while(!stack2.isEmpty()){
+	            stack1.push(stack2.pop());
+	        }
+	        return node;
+	    }
+}
+```
+* 首先确定队列和栈的特性，队列先进先出，栈先进后出。由此进队的时候直接进入栈stack1中即可，出队时，则先将stack1中的全部pop到stack2中，取出stack2的第一个值即为出队值，出队后要将stack2再依次取回到stack1，这样做是为了保证进队出队顺序不变.（日常操作时，有时候会遗忘进队1，2，出队1，进队3）
+#### 4.斐波那契数列（青蛙跳台阶是一类问题）
+##### 现在要求输入一个整数n，请你输出斐波那契数列的第n项。
+```
+public int Fibonacci(int n) {
+                 int a=1;int b=1;int c=0;
+		if(n==0){
+			return 0;
+		}
+		if(n==1||n==2)
+			return 1;
+		for(int i=3;i<n+1;i++){
+			c=a+b;
+			a=b;
+			b=c;
+		}
+		return c;
+    }
+```
+```   
+	if(n==0){
+		return 0;
+		}
+		if(n==1||n==2)
+		return 1;
+	return Fibonacci(n-1)+Fibonacci(n-2);   
+```
+* 可以使用递归和非递归两种方法解决这个问题
+#### 5.变态跳台阶
+##### 一只青蛙一次可以跳上1级台阶，也可以跳上2级……它也可以跳上n级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
+```
+	Math.pow(2,n-1);
+```
+* 不论跳几步，最后一个台阶是一定要跳的，其他台阶跳不跳两种情况，所以所有的跳法为2^(n-1);
+#### 6.合并两个排序的链表
+##### 输入两个单调递增的链表，输出两个链表合成后的链表，当然我们需要合成后的链表满足单调不减规则。
+```
+public class Solution {
+    public ListNode Merge(ListNode list1,ListNode list2) {
+         if(list1==null){
+	            return list2;
+	        }
+		 else if(list2==null){
+	            return list1;
+	        }
+	        ListNode newHead = null;
+	        if(list1.val<list2.val){
+	        	newHead = list1;
+	        	newHead.next = Merge(list1.next,list2);
+	        }else{
+	        	newHead = list2;
+	        	newHead.next = Merge(list1,list2.next);
+	        }
+	        return newHead;
+    }
+}
+```
+* 递归法：如果list1.val<list2.val,新节点为list1，然后将list1.next与list2继续进行比较直到完成所有比较。
+```
+if(list1 == null){
+            return list2;
+        }
+        if(list2 == null){
+            return list1;
+        }
+        ListNode mergeHead = null;
+        ListNode current = null;     
+        while(list1!=null && list2!=null){
+            if(list1.val <= list2.val){
+                if(mergeHead == null){
+                   mergeHead = current = list1;
+                }else{
+                   current.next = list1;
+                   current = current.next;
+                }
+                list1 = list1.next;
+            }else{
+                if(mergeHead == null){
+                   mergeHead = current = list2;
+                }else{
+                   current.next = list2;
+                   current = current.next;
+                }
+                list2 = list2.next;
+            }
+        }
+        if(list1 == null){
+            current.next = list2;
+        }else{
+            current.next = list1;
+        }
+        return mergeHead;
+```
+* 非递归解法：使用while循环不断比较
+#### 7.树的子结构
+##### 输入两棵二叉树A，B，判断B是不是A的子结构。（ps：我们约定空树不是任意一个树的子结构）。
+```
+/**
+public class TreeNode {
+    int val = 0;
+    TreeNode left = null;
+    TreeNode right = null;
 
+    public TreeNode(int val) {
+        this.val = val;
 
+    }
+
+}
+*/
+public class Solution {
+    public boolean HasSubtree(TreeNode root1,TreeNode root2) {
+      if(root2==null) return false;
+	        if(root1==null && root2!=null) return false;      
+	        boolean flag = false;
+	        if(root1.val==root2.val){
+	            flag = isSubTree(root1,root2);
+	        }
+	        if(!flag){
+	            flag = HasSubtree(root1.left, root2);
+	            if(!flag){
+	                flag = HasSubtree(root1.right, root2);
+	            }
+	        }
+	        return flag;
+	    }
+	     /**
+	      *判断是否完全相同  
+	      *@param root1
+	      *@param root2
+	      *@return
+	      */
+	    private boolean isSubTree(TreeNode root1, TreeNode root2) {
+	        if(root2==null) return true;
+	        if(root1==null && root2!=null) return false;      
+	        if(root1.val==root2.val){
+	            return isSubTree(root1.left, root2.left) && isSubTree(root1.right, root2.right);
+	        }else{
+	        return false;
+	        }
+	    }
+}
+```
+* 是不是树的子结构，也就是找到root1的某部分是否与root2的结构完全相同，使用递归解决，分别比较根节点，左子树，右子树。
+#### 6.最小的K个数
+##### 输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4。
+```
+public class Solution {
+    public ArrayList<Integer> GetLeastNumbers_Solution(int [] input, int k) {
+        ArrayList<Integer> list=new ArrayList<Integer>();
+        	if(input.length<k){
+			return list;
+		}
+		Map<Integer, Integer> map=new TreeMap<Integer, Integer>();
+		for(int i=0;i<input.length;i++){
+			map.put(i, input[i]);
+		}
+		 List<Entry<Integer, Integer>> list1 = new ArrayList<Entry<Integer, Integer>>(map.entrySet());
+		  Collections.sort(list1,new Comparator<Map.Entry<Integer,Integer>>() {  
+	            //升序排序  
+	            public int compare(Entry<Integer, Integer> o1, Entry<Integer, Integer> o2) {  
+	                return o1.getValue().compareTo(o2.getValue());  
+	            }  
+	        });  
+	         int count=0;
+	        if(list1.size()<k){
+	        	 for (Entry<Integer, Integer> e: list1) {  
+	 	        		list.add(e.getValue());
+	 	        	}
+	         }
+	         else{
+	        for (Entry<Integer, Integer> e: list1) {  
+	        	if(count<k){
+	        		list.add(e.getValue());
+	 	           count++;
+	        	}
+	        	else
+	        		break;
+	        }  
+	         }
+		 return list;	        
+	 }
+}
+```
+* 对于这个问题，最直接的想法就是排序，取前K个，该解决方法使用Treemap进行升序操作，然后截取了前K个即为最小数
+#### 7.Top K问题
+##### 从20亿个数据中取出最大（或者最小）的20个数
+```
+  public int findKthLargest(int[] nums, int k) {
+  PriorityQueue<Integer> minQueue = new PriorityQueue<>(k);
+  for (int num : nums) {
+    if (minQueue.size() < k || num > minQueue.peek())
+      minQueue.offer(num);
+    if (minQueue.size() > k)
+      minQueue.poll();
+  }
+  return minQueue.peek();
+}
+```
+* 解决这么大数据的取值问题，如果采用排序方法简直得不偿失，20亿个数据得排序到什么时候，因此直接的方法就是采用基于比较的方法进行处理。先利用小顶堆维护当前扫描到的最大100个数，其后每一次的扫描到的元素，若大于堆顶，则入堆，然后删除堆顶；依此往复，直至扫描完所有元素。
+
+#### 8.连续子数组的最大和
+##### 数组中的数有正有负，取得连续子数组的最大和
+```
+public class Solution {
+    public int FindGreatestSumOfSubArray(int[] array) {
+       if(array.length==0)
+		return 0;
+		int sum=array[0];
+		int next=array[0];
+		for(int i=1;i<array.length;i++){
+		next = (next < 0) ? array[i] : next + array[i];
+	        sum = (next > sum) ? next : sum;
+		}
+		return sum; 
+    }
+}
+```
+* 如果全是正数则非常容易，现在数组中有可能存在负数的情况，因此在循环过程中，要先求第一个局部的最大和，然后与下一个局部最大和进行比较；举例说明6,3,-2,-7,15,-1,-2,-2; sum和next都先取第一个数值，接下来next=9，sum=9;next=7,sum=9;next=0,sum=9;next=15,sum=15;
+#### 9.数组中出现次数超过一半的数字
+##### 例如输入一个长度为9的数组{1,2,3,2,2,2,5,4,2}。由于数字2在数组中出现了5次，超过数组长度的一半，因此输出2。如果不存在则输出0。
+```
+public class Solution {
+    public int MoreThanHalfNum_Solution(int [] array) {
+         if(array.length==1)
+        	return array[0];
+        Arrays.sort(array);
+        int count=1; 
+        for(int i=0;i<array.length-1;i++){
+        	if(array[i]==array[i+1]){
+        		count++;
+        		if(count>array.length/2)
+            		return array[i];
+        	}
+        	else{
+        		count=1;
+        	}
+        }
+        return 0;
+    }
+}
+```
+* 如果只有一个数则直接返回，如果length>=2,则先排序，然后for循环进行比较；
