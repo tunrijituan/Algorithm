@@ -320,3 +320,114 @@ public class Solution {
 }
 ```
 * 如果只有一个数则直接返回，如果length>=2,则先排序，然后for循环进行比较；
+#### 10.数组中的逆序对
+##### 在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数组,求出这个数组中的逆序对的总数P。并将P对1000000007取模的结果输出。 即输出P%1000000007。
+```
+		public static int InversePairs(int [] array) {
+		 int count=0;
+		 List<Integer> list=new ArrayList<>();
+		 for(int i=0;i<array.length;i++){
+			 list.add(array[i]);
+		 	}
+		while(!list.isEmpty()){
+			int a=min(list);
+			count=count+a;
+			list.remove(list.get(a));
+			}
+		 return count%1000000007;      
+		}
+	 	public static int min(List<Integer> array){
+		 int Min=0;
+		 for(int i=1;i<array.size();i++){
+			 if(array.get(Min)>array.get(i)){
+				 Min=i;
+			 }
+		 	}
+		 return Min;
+	 	}
+```
+* 数据量不大的情况下可以使用暴力法，两个for循环进行比较
+```
+//数组中的逆序对（分治思想，归并排序思想解决）
+	    public static int InversePairsVery(int[] array){
+	        if(array==null||array.length<=1)
+	            return 0;
+	        int[] copy = new int[array.length];
+	        for(int i=0;i<array.length;i++){
+	            copy[i] = array[i];
+	        }
+	        return mergeCount(array, copy, 0, array.length-1);
+	    }
+	    
+	    public static int mergeCount(int[] array, int[] copy, int start, int end){
+	        if(start==end){
+	            copy[start] = array[start];
+	            return 0;
+	        }
+	        int mid = (start+end)>>1;
+	        int leftCount = mergeCount(copy, array, start, mid);
+	        int rightCount = mergeCount(copy, array, mid+1, end);	        
+	        int i = mid;//i初始化为前半段最后一个数字的下标
+	        int j = end;//j初始化为后半段最后一个数字的下标
+	        int index = end;//辅助数组复制的数组的最后一个数字的下标
+	        int count = 0;//计数--逆序对的数目
+	        while(i>=start&&j>=mid+1){
+	            if(array[i]>array[j]){
+	                copy[index--] = array[i--];
+	                count += j-mid;
+	            }else{
+	                copy[index--] = array[j--];
+	            }
+	        }
+	        for(;i>=start;i--){
+	            copy[index--] = array[i];
+	        }
+	        for(;j>=mid+1;j--){
+	            copy[index--] = array[j];
+	        }
+	        return leftCount+rightCount+count;
+	    }
+```
+* 分治处理，分成两部分，分别求左右数组中逆序对的个数，然后求左右数组整合后新数组逆序对个数；逆序对的总数=左边数组中的逆序对的数量+右边数组中逆序对的数量+左右结合成新的顺序数组时中出现的逆序对的数量；举例来说更清楚些：对数组{1,2,3,4,5,6,7,0}求逆序对，
+* （1）1,2,3,4|5,6,7,0| 两部分
+* （2）1,2|3,4| 1,2不换位，3,4不换位，合并依然不换位 此时逆序对=0+0+0=0；
+* （3）5,6,|7,0| 5,6不换位，7,0换位，合并换两次位 此时逆序对=0+1+2=3；
+* （4）此时 1,2,3,4,0,5,6,7|换位4次，总逆序对=0+3+4=7；
+#### 11.和为S的连续正数序列
+##### 输出所有和为S的连续正数序列。序列内按照从小至大的顺序，序列间按照开始数字从小到大的顺序。
+```
+public class Solution {
+    public ArrayList<ArrayList<Integer> > FindContinuousSequence(int sum) {
+         ArrayList<ArrayList<Integer>> result=new ArrayList<ArrayList<Integer>>();
+	       ArrayList<Integer> list=new ArrayList<>();
+	       ArrayList<Integer> listinput=new ArrayList<>();
+	       if(sum==0||sum==1)
+	           return result;
+	        int jssum=0;
+	        for(int i=1;i<=sum/2+2;i++){
+	        	if(jssum<sum){
+	        		jssum=jssum+i;
+	        		list.add(i);
+	        	}
+	        	else if(jssum==sum){
+	        		listinput=(ArrayList<Integer>) list.clone();
+	        		result.add(listinput);
+	        		i=list.get(0);
+	        		list.removeAll(list);
+	        		jssum=0;
+	        	}
+	        	else{
+	        		i=list.get(0);
+	        		list.clear();
+	        		jssum=0;
+	        	}
+	        }
+	        if(jssum==sum)
+	        	result.add(list);
+	        return result;
+    }
+}
+```
+* 对于这类问题，我们首先明白循环到sum>>1+2就可以了，因为我们知道一个数最多可以由（中值*2+1）取的。
+#### 12.把数组排成最小的数
+##### 输入一个正整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。例如输入数组{3，32，321}，则打印出这三个数字能排成的最小数字为321323。
