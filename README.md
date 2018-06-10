@@ -564,5 +564,39 @@ public class Solution {
 }
 ```
 * 详见注解
+#### 17.平衡二叉树
+##### 输入一棵二叉树，判断该二叉树是否是平衡二叉树
+```
+package com.offer;
 
+import com.entity.TreeNode;
+
+public class 平衡二叉树 {
+
+	public static void main(String[] args) {
+		TreeNode tree1=new TreeNode(8);
+		tree1.left=new TreeNode(6);
+		tree1.right=new TreeNode(10);
+		tree1.left.left=new TreeNode(5);
+		tree1.left.right=new TreeNode(7);
+		tree1.right.left=new TreeNode(9);
+		tree1.right.right=new TreeNode(11);
+		System.out.println(IsBalanced_Solution(tree1));
+	}
+	public static boolean IsBalanced_Solution(TreeNode root) {
+        return getDepth(root) != -1;
+    }
+     
+    private static int getDepth(TreeNode root) {
+        if (root == null) return 0;
+        int left = getDepth(root.left);
+        if (left == -1) return -1;
+        int right = getDepth(root.right);
+        if (right == -1) return -1;
+        return Math.abs(left - right) > 1 ? -1 : 1 + Math.max(left, right);
+    }
+
+}
+```
+* 从下往上进行判断，一旦出现左右子树>1，则说明整个树不平衡，减少计算量
 
